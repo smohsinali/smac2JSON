@@ -1,14 +1,13 @@
 from argparse import ArgumentParser, FileType
 
 import pcs
-import json
+import pjson
 
 __authors__ = ["Katharina Eggensperger", "Matthias Feurer", "Moshin"]
 __contact__ = "automl.org"
 
 
 def main():
-    # python convert.py --from SMAC --to TPE -f space.any -s space.else
     prog = "python convert.py"
     description = "Convert SMAC parameters file to JSON"
 
@@ -29,15 +28,7 @@ def main():
     searchspace = pcs.read(args.input_file)
     print("...done. Found %d params" % len(searchspace._hyperparameters))
 
-    new_space = json.write(searchspace)
-
-    # No write it
-    if args.save != "":
-        output_fh = open(args.save, 'w')
-        output_fh.write(new_space)
-        output_fh.close()
-    else:
-        print(new_space)
+    pjson.write(searchspace)
 
 if __name__ == "__main__":
     main()

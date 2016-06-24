@@ -9,19 +9,22 @@ from ConfigSpace.forbidden import ForbiddenEqualsClause, \
 
 import pyparsing
 import six
+import json
 
 pp_param_name = pyparsing.Word(pyparsing.alphanums + "_" + "-" + "@" + "." + ":" + ";" + "\\" + "/" + "?" + "!" +
                                "$" + "%" + "&" + "*" + "+" + "<" + ">")
 
 
 def build_categorical(param):
-    cat_template = "%s '--%s ' c (%s)"
-    return [param.name, cat_template % (param.name, param.name, ",".join([str(value) for value in param.choices]))]
+    # cat_template = "%s '--%s ' c (%s)"
+    # return [param.name, cat_template % (param.name, param.name, ",".join([str(value) for value in param.choices]))]
+    return [param.name, {"type": "categrical", "values": [value for value in param.choices]}]
 
 
 def build_constant(param):
-    constant_template = "%s '--%s ' c (%s)"
-    return [param.name, constant_template % (param.name, param.name, param.value)]
+    # constant_template = "%s '--%s ' c (%s)"
+    # return [param.name, constant_template % (param.name, param.name, param.value)]
+    return [param.name, {"type": "constant", "value": param.value}]
 
 
 def build_continuous(param):
@@ -29,25 +32,7 @@ def build_continuous(param):
                        NormalFloatHyperparameter):
         param = param.to_uniform()
 
-    float_template = "%s '--%s ' r (%s, %s) "
-    int_template = "%s '--%s ' i (%d, %d)"
-    # if param.log:
-    #     float_template += "l"
-    #     int_template += "l"
-
-    if param.q is not None:
-        q_prefix = "Q%d_" % (int(param.q),)
-    else:
-        q_prefix = ""
-    default = param.default
-
-    if isinstance(param, IntegerHyperparameter):
-        default = int(default)
-        return [param.name, int_template % (param.name, param.name, param.lower,
-                               param.upper)]
-    else:
-        return [param.name, float_template % (param.name, param.name, str(param.lower),
-                                 str(param.upper))]
+    return [param.name, {"type": "continuous", "range": [param.lower, param.upper]}]
 
 
 def build_condition(condition):
@@ -56,35 +41,23 @@ def build_condition(condition):
                         "'%s', got '%s'" %
                         (ConditionComponent, type(condition)))
 
-    # Check if IRACE can handle the condition
-    if isinstance(condition, OrConjunction):
-        raise NotImplementedError("IRACE cannot handle OR conditions: %s" %
-                                  (condition))
-    if isinstance(condition, NotEqualsCondition):
-        raise NotImplementedError("IRACE cannot handle != conditions: %s" %
-                                  (condition))
-
     # Findout type of parent
-    pType = "i"
+    pType = "integer"
     if condition.parent.__class__.__name__ == 'CategoricalHyperparameter':
-        pType = 'c'
+        pType = 'categorical'
     if condition.parent.__class__.__name__ == 'UniformFloatHyperparameter':
-        pType = 'r'
+        pType = 'continuous'
 
+    print(type(condition).__name__)
     # Now handle the conditions SMAC can handle
     condition_template = " | %s %%in%% %s(%s) "
     if isinstance(condition, AndConjunction):
         raise NotImplementedError("This is not yet implemented!")
-    elif isinstance(condition, InCondition):
-        return [condition.child.name, condition_template % (
-                                     condition.parent.name,
-                                     pType,
-                                     ", ".join(condition.values))]
-    elif isinstance(condition, EqualsCondition):
-        return [condition.child.name, condition_template % (
-                                     condition.parent.name,
-                                     pType,
-                                     condition.value)]
+    else:
+        if type(condition).__name__ == "EqualsCondition":
+            return [condition.child.name, condition.parent.name, pType, condition.value]
+        else:
+            return [condition.child.name, condition.parent.name, pType, [value for value in condition.values]]
 
 
 def build_forbidden(clause):
@@ -99,7 +72,6 @@ def build_forbidden(clause):
 
     retval = six.StringIO()
     retval.write("{")
-    # Really simple because everything is an AND-conjunction of equals
     # conditions
     dlcs = clause.get_descendant_literal_clauses()
     for dlc in dlcs:
@@ -145,44 +117,24 @@ def write(configuration_space):
                 type(hyperparameter), hyperparameter))
 
     for condition in configuration_space.get_conditions():
-        condition_vars = build_condition(condition)
-        condition_lines_dict.update({condition_vars[0]: condition_vars[1]})
+        condition_vars = build_condition(condition)  # [child, parent, ptype, vals]
 
-    for forbidden_clause in configuration_space.forbidden_clauses:
-        # Convert in-statement into two or more equals statements
-        dlcs = forbidden_clause.get_descendant_literal_clauses()
-        # First, get all in statements and convert them to equal statements
-        in_statements = []
-        other_statements = []
-        for dlc in dlcs:
-            if isinstance(dlc, MultipleValueForbiddenClause):
-                if not isinstance(dlc, ForbiddenInClause):
-                    raise ValueError("IRACE cannot handle this forbidden "
-                                     "clause: %s" % dlc)
-                in_statements.append(
-                    [ForbiddenEqualsClause(dlc.hyperparameter, value)
-                     for value in dlc.values])
-            else:
-                other_statements.append(dlc)
-        # Second, create the product of all elements in the IN statements,
-        # create a ForbiddenAnd and add all ForbiddenEquals
-        if len(in_statements) > 0:
-            for i, p in enumerate(product(*in_statements)):
-                all_forbidden_clauses = list(p) + other_statements
-                f = ForbiddenAndConjunction(*all_forbidden_clauses)
-                forbidden_lines.append(build_forbidden(f))
+        child = condition_vars[0]
+        parent = condition_vars[1]
+        pType = condition_vars[2]
+        vals = condition_vars[3]
+
+        if "dependsOn" in param_lines_dict[child]:
+            param_lines_dict[child]["dependsOn"].append[{parent: {"type": pType, "values": vals}}]
         else:
-            forbidden_lines.append(build_forbidden(forbidden_clause))
+            param_lines_dict[child]["dependsOn"] = [{parent: {"type": pType, "values": vals}}]
 
-    param_lines = six.StringIO()
-    for param in param_lines_dict:
-        if param in condition_lines_dict:
-            # print(param_lines_dict[param] + condition_lines_dict[param])
-            param_lines_dict[param] = param_lines_dict[param] + condition_lines_dict[param] + '\n'
+        if "affects" in param_lines_dict[parent]:
+            param_lines_dict[parent]["affects"].append(child)
         else:
-            param_lines_dict[param] += '\n'
-        param_lines.write(param_lines_dict[param])
+            param_lines_dict[parent]["affects"] = [child]
 
-    # TODO: check if irace supports forbidden lines
+    with open('data.txt', 'w') as outfile:
+        dump = json.dumps(param_lines_dict, sort_keys=True, indent=4)
+        outfile.write(dump)
 
-    return param_lines.getvalue()

@@ -1,0 +1,396 @@
+{
+    "sp-clause-activity-inc": {
+        "range": [
+            0.5,
+            1.5
+        ],
+        "type": "continuous"
+    },
+    "sp-clause-decay": {
+        "range": [
+            1.0,
+            2.0
+        ],
+        "type": "continuous"
+    },
+    "sp-clause-del-heur": {
+        "type": "categrical",
+        "values": [
+            "0",
+            "1",
+            "2"
+        ]
+    },
+    "sp-clause-inversion": {
+        "dependsOn": [
+            {
+                "sp-learned-clause-sort-heur": {
+                    "type": "categorical",
+                    "values": "19"
+                }
+            }
+        ],
+        "type": "categrical",
+        "values": [
+            "0",
+            "1"
+        ]
+    },
+    "sp-first-restart": {
+        "range": [
+            25.0,
+            3200.0
+        ],
+        "type": "continuous"
+    },
+    "sp-learned-clause-sort-heur": {
+        "affects": [
+            "sp-clause-inversion"
+        ],
+        "type": "categrical",
+        "values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19"
+        ]
+    },
+    "sp-learned-clauses-inc": {
+        "range": [
+            1.1,
+            1.5
+        ],
+        "type": "continuous"
+    },
+    "sp-learned-size-factor": {
+        "range": [
+            0.1,
+            1.6
+        ],
+        "type": "continuous"
+    },
+    "sp-max-res-lit-inc": {
+        "dependsOn": [
+            {
+                "sp-resolution": {
+                    "type": "categorical",
+                    "values": [
+                        "1",
+                        "2"
+                    ]
+                }
+            }
+        ],
+        "range": [
+            0.25,
+            4.0
+        ],
+        "type": "continuous"
+    },
+    "sp-max-res-runs": {
+        "dependsOn": [
+            {
+                "sp-resolution": {
+                    "type": "categorical",
+                    "values": [
+                        "1",
+                        "2"
+                    ]
+                }
+            }
+        ],
+        "range": [
+            1.0,
+            32.0
+        ],
+        "type": "continuous"
+    },
+    "sp-orig-clause-sort-heur": {
+        "type": "categrical",
+        "values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19"
+        ]
+    },
+    "sp-phase-dec-heur": {
+        "affects": [
+            "sp-rand-phase-dec-freq"
+        ],
+        "type": "categrical",
+        "values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+        ]
+    },
+    "sp-rand-phase-dec-freq": {
+        "affects": [
+            "sp-rand-phase-scaling"
+        ],
+        "dependsOn": [
+            {
+                "sp-phase-dec-heur": {
+                    "type": "categorical",
+                    "values": [
+                        "0",
+                        "1",
+                        "3",
+                        "4",
+                        "5",
+                        "6"
+                    ]
+                }
+            }
+        ],
+        "type": "categrical",
+        "values": [
+            "0",
+            "0.0001",
+            "0.001",
+            "0.005",
+            "0.01",
+            "0.05"
+        ]
+    },
+    "sp-rand-phase-scaling": {
+        "dependsOn": [
+            {
+                "sp-rand-phase-dec-freq": {
+                    "type": "categorical",
+                    "values": [
+                        "0.0001",
+                        "0.001",
+                        "0.005",
+                        "0.01",
+                        "0.05"
+                    ]
+                }
+            }
+        ],
+        "range": [
+            0.3,
+            1.1
+        ],
+        "type": "continuous"
+    },
+    "sp-rand-var-dec-freq": {
+        "affects": [
+            "sp-rand-var-dec-scaling"
+        ],
+        "type": "categrical",
+        "values": [
+            "0",
+            "0.0001",
+            "0.001",
+            "0.005",
+            "0.01",
+            "0.05"
+        ]
+    },
+    "sp-rand-var-dec-scaling": {
+        "dependsOn": [
+            {
+                "sp-rand-var-dec-freq": {
+                    "type": "categorical",
+                    "values": [
+                        "0.0001",
+                        "0.001",
+                        "0.005",
+                        "0.01",
+                        "0.05"
+                    ]
+                }
+            }
+        ],
+        "range": [
+            0.3,
+            1.1
+        ],
+        "type": "continuous"
+    },
+    "sp-res-cutoff-cls": {
+        "dependsOn": [
+            {
+                "sp-resolution": {
+                    "type": "categorical",
+                    "values": [
+                        "1",
+                        "2"
+                    ]
+                }
+            }
+        ],
+        "range": [
+            2.0,
+            20.0
+        ],
+        "type": "continuous"
+    },
+    "sp-res-cutoff-lits": {
+        "dependsOn": [
+            {
+                "sp-resolution": {
+                    "type": "categorical",
+                    "values": [
+                        "1",
+                        "2"
+                    ]
+                }
+            }
+        ],
+        "range": [
+            100.0,
+            1600.0
+        ],
+        "type": "continuous"
+    },
+    "sp-res-order-heur": {
+        "dependsOn": [
+            {
+                "sp-resolution": {
+                    "type": "categorical",
+                    "values": [
+                        "1",
+                        "2"
+                    ]
+                }
+            }
+        ],
+        "type": "categrical",
+        "values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19"
+        ]
+    },
+    "sp-resolution": {
+        "affects": [
+            "sp-res-cutoff-lits",
+            "sp-max-res-lit-inc",
+            "sp-max-res-runs",
+            "sp-res-order-heur",
+            "sp-res-cutoff-cls"
+        ],
+        "type": "categrical",
+        "values": [
+            "0",
+            "1",
+            "2"
+        ]
+    },
+    "sp-restart-inc": {
+        "range": [
+            1.1,
+            1.9
+        ],
+        "type": "continuous"
+    },
+    "sp-update-dec-queue": {
+        "type": "categrical",
+        "values": [
+            "0",
+            "1"
+        ]
+    },
+    "sp-use-pure-literal-rule": {
+        "type": "categrical",
+        "values": [
+            "0",
+            "1"
+        ]
+    },
+    "sp-var-activity-inc": {
+        "range": [
+            0.5,
+            1.5
+        ],
+        "type": "continuous"
+    },
+    "sp-var-dec-heur": {
+        "type": "categrical",
+        "values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19"
+        ]
+    },
+    "sp-variable-decay": {
+        "range": [
+            1.0,
+            2.0
+        ],
+        "type": "continuous"
+    }
+}
