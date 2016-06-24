@@ -1,10 +1,7 @@
 from argparse import ArgumentParser, FileType
-from string import upper
 
-# from ConfigSpace.io import pbs
-# from ConfigSpace.io import pyll
 import pcs
-
+import json
 
 __authors__ = ["Katharina Eggensperger", "Matthias Feurer", "Moshin"]
 __contact__ = "automl.org"
@@ -27,13 +24,12 @@ def main():
     if args.input_file is None:
         raise ValueError("No input file given")
 
-    read_options = {"SMAC": pcs.read}
     # First read searchspace
     print("Reading searchspace...")
     searchspace = pcs.read(args.input_file)
     print("...done. Found %d params" % len(searchspace._hyperparameters))
 
-    # new_space = json.write(searchspace)
+    new_space = json.write(searchspace)
 
     # No write it
     if args.save != "":
