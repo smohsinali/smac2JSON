@@ -138,7 +138,7 @@ def write(configuration_space):
         else:
             param_lines_dict[parent]["affects"] = [child]
 
-    with open('data.txt', 'w') as outfile:
+    with open('data.js', 'w') as outfile:
         dump = json.dumps(param_lines_dict, sort_keys=True, indent=4)
-        outfile.write(dump)
+        outfile.write("var data_js = " + dump)
 
