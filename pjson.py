@@ -123,6 +123,10 @@ def write(configuration_space):
         parent = condition_vars[1]
         pType = condition_vars[2]
         vals = condition_vars[3]
+        if type(vals) == str:
+            tmp = list()
+            tmp.append(vals)
+            vals = tmp
 
         if "dependsOn" in param_lines_dict[child]:
             param_lines_dict[child]["dependsOn"].append[{parent: {"type": pType, "values": vals}}]
