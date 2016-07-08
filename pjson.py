@@ -6,7 +6,7 @@ from ConfigSpace.conditions import EqualsCondition, NotEqualsCondition, \
     InCondition, AndConjunction, OrConjunction, ConditionComponent
 from ConfigSpace.forbidden import ForbiddenEqualsClause, \
     ForbiddenAndConjunction, ForbiddenInClause, AbstractForbiddenComponent, MultipleValueForbiddenClause
-
+from math import log
 import pyparsing
 import six
 import json
@@ -18,7 +18,7 @@ pp_param_name = pyparsing.Word(pyparsing.alphanums + "_" + "-" + "@" + "." + ":"
 def build_categorical(param):
     # cat_template = "%s '--%s ' c (%s)"
     # return [param.name, cat_template % (param.name, param.name, ",".join([str(value) for value in param.choices]))]
-    return [param.name, {"type": "categrical", "values": [value for value in param.choices]}]
+    return [param.name, {"type": "categrical", "values": [value for value in param.choices], "default": param.default}]
 
 
 def build_constant(param):
@@ -32,7 +32,12 @@ def build_continuous(param):
                        NormalFloatHyperparameter):
         param = param.to_uniform()
 
-    return [param.name, {"type": "continuous", "range": [param.lower, param.upper]}]
+    if param.log is True:
+        return [param.name, {"type": "continuous", "range": [round(log(param.lower), 2), round(log(param.upper), 2)],
+                             "log-scale": "True", "default": round(log(param.default), 2)}]
+    else:
+        return [param.name, {"type": "continuous", "range": [param.lower, param.upper],
+                             "log-scale": "False", "default": param.default}]
 
 
 def build_condition(condition):
