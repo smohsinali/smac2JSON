@@ -33,11 +33,11 @@ def build_continuous(param):
         param = param.to_uniform()
 
     if param.log is True:
-        return [param.name, {"type": "continuous", "range": [round(log(param.lower), 2), round(log(param.upper), 2)],
-                             "log-scale": "True", "default": round(log(param.default), 2)}]
+        return [param.name, {"type": "continuous", "range": [param.lower, param.upper],
+                             "log-scale": "true", "default": param.default}]
     else:
         return [param.name, {"type": "continuous", "range": [param.lower, param.upper],
-                             "log-scale": "False", "default": param.default}]
+                             "log-scale": "false", "default": param.default}]
 
 
 def build_condition(condition):
