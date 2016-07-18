@@ -32,12 +32,17 @@ def build_continuous(param):
                        NormalFloatHyperparameter):
         param = param.to_uniform()
 
+    if param.__class__.__name__ == 'UniformIntegerHyperparameter':
+        intStatus = "true"
+    else:
+        intStatus = "false"
+
     if param.log is True:
         return [param.name, {"type": "continuous", "range": [param.lower, param.upper],
-                             "log-scale": "true", "default": param.default}]
+                             "log-scale": "true", "default": param.default, "integer": intStatus}]
     else:
         return [param.name, {"type": "continuous", "range": [param.lower, param.upper],
-                             "log-scale": "false", "default": param.default}]
+                             "log-scale": "false", "default": param.default, "integer": intStatus}]
 
 
 def build_condition(condition):
